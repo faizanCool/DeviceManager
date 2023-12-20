@@ -1,0 +1,10 @@
+INSERT INTO Device (serial_number, model, version, status, description) VALUES ('1230', 'APPLE', 'iPhone 13', 'INSRV', '');
+INSERT INTO Device (serial_number, model, version, status, description) VALUES ('1231', 'APPLE', 'iPhone 11', 'CONDEMEN', '');
+INSERT INTO Device (serial_number, model, version, status, description) VALUES ('1232', 'APPLE', 'iPhone 12', 'INSRV', '');
+INSERT INTO Device (serial_number, model, version, status, description) VALUES ('1233', 'APPLE', 'iPhone X', 'INSRV', '');
+INSERT INTO Device (serial_number, model, version, status, description) VALUES ('1234', 'SAMSUNG', 'Galaxy S9', 'INSRV', '');
+INSERT INTO Device (serial_number, model, version, status, description) VALUES ('1235', 'SAMSUNG', '2x Galaxy S8', 'INSRV', '');
+INSERT INTO Device (serial_number, model, version, status, description) VALUES ('1236', 'MOTOROLA', 'Nexus 6', 'INRPR', '');
+INSERT INTO Device (serial_number, model, version, status, description) VALUES ('1237', 'ONE_PLUS', '9', 'INSRV', '');
+INSERT INTO Device (serial_number, model, version, status, description) VALUES ('1238', 'NOKIA', '3310', 'INSRV', '');
+INSERT INTO Device (serial_number, model, version, status, description) VALUES ('1239', 'VIVA', 'ELITE 2', 'INSRV', '');
