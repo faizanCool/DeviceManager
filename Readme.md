@@ -30,7 +30,9 @@ Available Api calls - refer APIInstructionGuide.md for more details
         device/add
         device/change-status
 
-
+Manual test
+* Start the application by DeviceManagerApplication.java
+* Open postman and import attached "Device Manager.postman_collection.json" for sample requests. You can change the values and test manually.
 
 Unit tests
 

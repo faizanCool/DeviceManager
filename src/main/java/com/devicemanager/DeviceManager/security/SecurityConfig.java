@@ -29,7 +29,6 @@ public class SecurityConfig {
                         .pathMatchers("/"+ Constants.RouterCons.ADD_BOOKING,
                                 "/" + Constants.RouterCons.UPDATE_BOOKING,
                                 "/" + Constants.RouterCons.CANCEL_BOOKING,
-                                "/" + Constants.RouterCons.AVAILABLE_DEVICES,
                                 "/" + Constants.RouterCons.RETURN_DEVICE,
                                 "/" + Constants.RouterCons.GET_BOOKINGS,
                                 "/" + Constants.RouterCons.GET_DEVICE,

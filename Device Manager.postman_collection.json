@@ -1,0 +1,238 @@
+{
+	"info": {
+		"_postman_id": "b4beb29e-95a5-40b6-ad8c-f37075a1d6f9",
+		"name": "Device Manager",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11045938"
+	},
+	"item": [
+		{
+			"name": "device-reservation",
+			"item": [
+				{
+					"name": "Get bookings",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"serialNumber\" : \"1230\",\n    \"startDate\" : \"2023-12-27T00:00:00.000+00:00\",\n    \"endDate\" : \"2024-01-28T00:00:00.000+00:00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/device-reservation/get-bookings",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"device-reservation",
+								"get-bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update booking",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"startDate\" : \"2024-01-04T00:00:00\",\n    \"endDate\": \"2024-01-07T00:00:00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/device-reservation/update-booking",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"device-reservation",
+								"update-booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add booking",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"serialNumber\" : \"1230\",\n    \"userId\": \"12345678\",\n    \"expectedStartDate\" : \"2024-01-05T00:00:00\",\n    \"expectedReturnDate\" : \"2024-01-10T00:00:00\",\n    \"description\": \"test booking\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/device-reservation/add-booking",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"device-reservation",
+								"add-booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get closed bookings",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/device-reservation/get-All-closed-bookings",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"device-reservation",
+								"get-All-closed-bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel a booking",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"userId\" : \"user1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/device-reservation/cancel-existing-booking",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"device-reservation",
+								"cancel-existing-booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Return device",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 2,\n    \"userId\" : \"user1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/device-reservation/return-device",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"device-reservation",
+								"return-device"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "device",
+			"item": [
+				{
+					"name": "Get available devices",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"startDate\": \"2023-12-23T00:00:00\",\n    \"endDate\": \"2023-12-24T00:00:00\",\n    \"models\": [\n        \"SAMSUNG\",\n        \"APPLE\"\n    ], // available values - [\"MOTOROLA\", \"ONE_PLUS\", \"NOKIA\", \"VIVA\"]\n    \"statuses\": [\n        \"CONDEMEN\",\n        \"INRPR\",\n        \"INSRV\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:81/device/get-available-devices",
+							"host": [
+								"localhost"
+							],
+							"port": "81",
+							"path": [
+								"device",
+								"get-available-devices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Device",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/device/get-device/1234",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"device",
+								"get-device",
+								"1234"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
