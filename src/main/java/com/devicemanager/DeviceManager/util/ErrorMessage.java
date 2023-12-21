@@ -14,6 +14,7 @@ public class ErrorMessage {
         public static final String INVALID_END_DATE = "End date is before start date";
         public static final String INVALID_UPDATE_START_DATE = "Can't update start date since already started the using the device";
         public static final String START_DATE_NOT_IN_FUTURE = "Start date should be in future date";
+        public static final String INVALID_RETURN_DEVICE = "can't return device, without starting a booking. Please cancel the booking";
     }
 
     public static class DataIntegrityErrorMessage {

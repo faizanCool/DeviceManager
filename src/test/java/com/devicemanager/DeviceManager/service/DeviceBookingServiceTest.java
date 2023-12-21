@@ -198,27 +198,34 @@ public class DeviceBookingServiceTest {
         Assertions.assertEquals(new Date(startDate.getTime() + 150000), a_3.getExpectedStartDate());
     }
 
+    // due to time constraint - covered most of functionalities in below test
     @Test
-    public void allTests_bookingService_success() {
+    public void allTests_bookingService_success() throws InterruptedException {
+        // book device 1234
         ActiveDeviceBooking a_1 = deviceBookingService.saveDeviceBooking(
                 ActiveDeviceBooking.builder().serialNumber("1234").userId("user123").expectedStartDate(startDate)
                         .expectedReturnDate(endDate).createdDate(now).build()).block();
 
+        // book device 1230
         ActiveDeviceBooking a_2 = deviceBookingService.saveDeviceBooking(
                 ActiveDeviceBooking.builder().serialNumber("1230").userId("user123")
                         .expectedStartDate(new Date(startDate.getTime() + 1000000))
                         .expectedReturnDate(new Date(endDate.getTime() + 1000000)).createdDate(now).build()).block();
 
+        // book device 1234 without collide first booking
         ActiveDeviceBooking a_3 = deviceBookingService.saveDeviceBooking(
                 ActiveDeviceBooking.builder().serialNumber("1234").userId("user123")
                         .expectedStartDate(new Date(startDate.getTime() + 900000))
                         .expectedReturnDate(new Date(endDate.getTime() + 900000)).createdDate(now).build()).block();
+
+        // check for bookings for 1230
         List<ActiveDeviceBooking> bookings = deviceBookingService.getBookings(DeviceBookingGetRequest.builder()
                 .serialNumber("1230")
                 .build()).collectList().block();
         Assertions.assertEquals(1, bookings.size());
         Assertions.assertEquals(a_2.getId(), bookings.get(0).getId() );
 
+        // check bookings for 1234
         List<ActiveDeviceBooking> bookings_1 = deviceBookingService.getBookings(DeviceBookingGetRequest.builder()
                 .serialNumber("1234")
                 .build()).collectList().block();
@@ -227,7 +234,7 @@ public class DeviceBookingServiceTest {
                 (bookings_1.get(0).getId().equals(a_1.getId()) || bookings_1.get(0).getId().equals(a_3.getId())));
         Assertions.assertTrue(!bookings_1.get(1).getId().equals(a_2.getId()) &&
                 (bookings_1.get(1).getId().equals(a_1.getId()) || bookings_1.get(1).getId().equals(a_3.getId())));
-        Assertions.assertNotEquals(a_1.getId(), a_3.getId());
+        Assertions.assertNotEquals(a_1.getId(), a_3.getId()); // confirmed not same bookings
         Assertions.assertEquals("1234", a_3.getSerialNumber());
         Assertions.assertEquals(a_1.getSerialNumber(), a_3.getSerialNumber());
 
@@ -250,19 +257,20 @@ public class DeviceBookingServiceTest {
         Assertions.assertNotEquals(a_2.getId(), a_3.getId());
         Assertions.assertNotEquals(bookings_3.get(1).getSerialNumber(), bookings_3.get(0).getSerialNumber());
 
-        ClosedDeviceBooking returnedClosedDeviceBooking = deviceBookingService.closeBooking(
-                DeviceClosebookingRequest.builder()
-                        .id(a_1.getId()).userId("user9321")
-                        .build(),
-                CloseEvent.RETURNED).block();
+        // returning a device
+        try {
+            deviceBookingService.closeBooking(
+                    DeviceClosebookingRequest.builder()
+                            .id(a_1.getId()).userId("user9321")
+                            .build(),
+                    CloseEvent.RETURNED).block();
+        } catch (Exception e) {
+            Assertions.assertTrue(e.getMessage().contains(ErrorMessage.ValidationErrorMessage.INVALID_RETURN_DEVICE));
+        }
 
-        Assertions.assertEquals(CloseEvent.RETURNED, returnedClosedDeviceBooking.getEvent());
-        Assertions.assertEquals("user9321", returnedClosedDeviceBooking.getClosedBy());
-        Assertions.assertEquals("user123", returnedClosedDeviceBooking.getCreatedBy());
-
-        Assertions.assertEquals(2, deviceBookingService.getBookings(DeviceBookingGetRequest.builder()
+        Assertions.assertEquals(3, deviceBookingService.getBookings(DeviceBookingGetRequest.builder()
                 .build()).collectList().block().size());
-        Assertions.assertEquals(1, deviceBookingService.getAllClosedBookings().collectList().block().size());
+        Assertions.assertEquals(0, deviceBookingService.getAllClosedBookings().collectList().block().size());
 
         ClosedDeviceBooking canceledClosedDeviceBooking = deviceBookingService.closeBooking(
                 DeviceClosebookingRequest.builder()
@@ -274,7 +282,36 @@ public class DeviceBookingServiceTest {
         Assertions.assertEquals("user9321", canceledClosedDeviceBooking.getClosedBy());
         Assertions.assertEquals("user123", canceledClosedDeviceBooking.getCreatedBy());
 
-        Assertions.assertEquals(1, deviceBookingService.getBookings(DeviceBookingGetRequest.builder()
+        Assertions.assertEquals(2, deviceBookingService.getBookings(DeviceBookingGetRequest.builder()
+                .build()).collectList().block().size());
+        Assertions.assertEquals(1, deviceBookingService.getAllClosedBookings().collectList().block().size());
+
+        // book device 1234 without collide first booking
+        // create a booking start in one second
+        ActiveDeviceBooking a_4 = deviceBookingService.saveDeviceBooking(
+                ActiveDeviceBooking.builder().serialNumber("1238").userId("user123")
+                        .expectedStartDate(new Date((new Date()).getTime() + 1000))
+                        .expectedReturnDate(endDate).createdDate(now).build()).block();
+
+        // confirms save done
+        Assertions.assertEquals(3, deviceBookingService.getBookings(DeviceBookingGetRequest.builder()
+                .build()).collectList().block().size());
+
+        //wait(2000) wait for 2 seconds;
+        Thread.sleep(2000);
+
+        // started the booking a_4, so can return
+        ClosedDeviceBooking returnClosedBooking = deviceBookingService.closeBooking(
+                DeviceClosebookingRequest.builder()
+                        .id(a_4.getId()).userId("user9321")
+                        .build(),
+                CloseEvent.RETURNED).block();
+
+        Assertions.assertEquals(CloseEvent.RETURNED, returnClosedBooking.getEvent());
+        Assertions.assertEquals("user9321", returnClosedBooking.getClosedBy());
+        Assertions.assertEquals("user123", returnClosedBooking.getCreatedBy());
+
+        Assertions.assertEquals(2, deviceBookingService.getBookings(DeviceBookingGetRequest.builder()
                 .build()).collectList().block().size());
         Assertions.assertEquals(2, deviceBookingService.getAllClosedBookings().collectList().block().size());
 

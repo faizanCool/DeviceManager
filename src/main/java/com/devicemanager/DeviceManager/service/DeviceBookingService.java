@@ -127,9 +127,13 @@ public class DeviceBookingService {
     * */
     public Mono<ClosedDeviceBooking> closeBooking(final DeviceClosebookingRequest deviceClosebookingRequest, final CloseEvent event) {
         return Mono.justOrEmpty(deviceBookingRepository.findById(deviceClosebookingRequest.getId()))
-                .map(activeDeviceBooking -> {
-                    deviceBookingRepository.delete(activeDeviceBooking);
-                    return closedDeviceBookingRepository.save(
+                .flatMap(activeDeviceBooking -> {
+                    if (CloseEvent.RETURNED.equals(event) &&
+                            DateValidator.isFutureDate(activeDeviceBooking.getExpectedStartDate())) {
+                        return Mono.error(new KnownException(ErrorMessage.ValidationErrorMessage.INVALID_RETURN_DEVICE));
+                    }
+                    deleteActiveBookingById(activeDeviceBooking);
+                    return Mono.just(closedDeviceBookingRepository.save(
                             ClosedDeviceBooking.builder()
                                     .serialNumber(activeDeviceBooking.getSerialNumber())
                                     .createdDate(activeDeviceBooking.getCreatedDate())
@@ -140,9 +144,18 @@ public class DeviceBookingService {
                                     .expectedStartDate(activeDeviceBooking.getExpectedStartDate())
                                     .expectedReturnDate(activeDeviceBooking.getExpectedReturnDate())
                                     .event(event)
-                                    .build()
+                                    .build())
                     );
                 })
                 .switchIfEmpty(Mono.error(new KnownException(ErrorMessage.ValidationErrorMessage.INVALID_BOOKING_DETAILS)));
+    }
+
+    private Mono<Long> deleteActiveBookingById(final ActiveDeviceBooking activeDeviceBooking) {
+        try {
+            deviceBookingRepository.deleteById(activeDeviceBooking.getId());
+        } catch (Exception e) {
+            return Mono.error(e);
+        }
+        return Mono.just(activeDeviceBooking.getId());
     }
 }
